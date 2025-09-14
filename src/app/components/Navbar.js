@@ -1,22 +1,46 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useEffect, useState, useMemo, useCallback } from "react";
 import { Menu, Button } from "antd";
-import { useSelector, useDispatch } from "react-redux";
-import { logout } from "@/redux/authSlice";
 import routes from "../routes";
 
-export default function Navbar() {
-  const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
-  const dispatch = useDispatch();
 
-  const menuItems = routes
-    .filter((route) => route.showInNavbar && (!route.requiresAuth || isLoggedIn))
-    .map((route) => ({
-      key: route.path,
-      label: <Link href={route.path}>{route.name}</Link>,
-      icon: route.icon || null,
-    }));
+export default function Navbar() {
+  const router = useRouter();
+  const [auth, setAuth] = useState(false);
+
+  useEffect(() => {
+  if (typeof window === "undefined") return;
+
+  const checkAuth = () => setAuth(Boolean(localStorage.getItem("user")));
+
+  checkAuth(); // initial check
+  router.refresh?.(); // optional: force refresh in Next 13+
+
+  // listen to route changes
+  window.addEventListener("storage", checkAuth);
+  return () => window.removeEventListener("storage", checkAuth);
+}, [router]);
+
+  const menuItems = useMemo(
+    () =>
+      routes
+        .filter((r) => r.showInNavbar && (!r.requiresAuth || auth))
+        .map((r) => ({
+          key: r.path,
+          label: <Link href={r.path}>{r.name}</Link>,
+          icon: r.icon || null,
+        })),
+    [auth]
+  );
+
+  const logout = useCallback(() => {
+    localStorage.removeItem("user");
+    setAuth(false);
+    router.push("/");
+  }, [router]);
 
   return (
     <div className="shadow-md bg-white">
@@ -25,18 +49,15 @@ export default function Navbar() {
           mode="horizontal"
           items={menuItems}
           selectable={false}
-          style={{ width: "30%", justifyContent: "space-between" }}
+          style={{ flex: 1, maxWidth: 400 }}
         />
-
         <div>
-          {!isLoggedIn ? (
+          {auth ? (
+            <Button onClick={logout}>Logout</Button>
+          ) : (
             <Link href="/login">
               <Button type="primary">Login</Button>
             </Link>
-          ) : (
-            <Button type="default" onClick={() => dispatch(logout())}>
-              Logout
-            </Button>
           )}
         </div>
       </div>

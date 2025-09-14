@@ -1,31 +1,38 @@
 "use client";
 
-import { Button, Form, Input } from "antd";
-import axios from "axios";
-import { useDispatch } from "react-redux";
-import { login } from "../../redux/authSlice";
+import { Button, Form, Input, message } from "antd";
 import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 export default function LoginPage() {
-  const dispatch = useDispatch();
   const router = useRouter();
+  const [ready, setReady] = useState(false);
 
-  const onFinish = async (values) => {
-    try {
-      // Call your backend (mocked)
-      await axios.post("http://localhost:8002/api-vocab/auth/login", values);
-      dispatch(login());
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setReady(true); // ensures localStorage exists
+    }
+  }, []);
+
+  const onFinish = (values) => {
+    const user = values.user?.trim();
+    const password = values.password?.trim();
+
+    if (user === "admin" && password === "admin123") {
+      localStorage.setItem("user", "adm-mmk");
       router.push("/");
-    } catch (err) {
-      console.error(err);
+    } else {
+      message.error("Invalid username or password");
     }
   };
+
+  if (!ready) return null; // avoid SSR crash
 
   return (
     <div className="max-w-md mx-auto mt-20 p-6 bg-white shadow rounded-lg">
       <h2 className="text-2xl font-bold mb-6 text-center">Login</h2>
       <Form onFinish={onFinish} layout="vertical">
-        <Form.Item label="Email" name="email" rules={[{ required: true }]}>
+        <Form.Item label="User" name="user" rules={[{ required: true }]}>
           <Input />
         </Form.Item>
         <Form.Item label="Password" name="password" rules={[{ required: true }]}>

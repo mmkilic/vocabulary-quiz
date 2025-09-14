@@ -119,7 +119,7 @@ function AppTable({
               Search
             </Button>
             <Button type="primary" onClick={(e) => setIsVisibleCreate(true)}>
-              Create New
+              New Quiz
             </Button>
           </Space>
         </Col>

@@ -1,6 +1,4 @@
-// src/routes.js
-
-import { HomeOutlined, UserOutlined, BookOutlined, InfoCircleOutlined } from "@ant-design/icons";
+import { HomeOutlined, BookOutlined, InfoCircleOutlined } from "@ant-design/icons";
 
 const routes = [
   {
@@ -14,13 +12,6 @@ const routes = [
     name: "Quiz",
     icon: <BookOutlined />,
     showInNavbar: true,
-  },
-  {
-    path: "/user",
-    name: "User",
-    icon: <UserOutlined />,
-    showInNavbar: true,
-    requiresAuth: true,
   },
   {
     path: "/word",

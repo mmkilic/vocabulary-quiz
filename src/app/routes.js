@@ -26,6 +26,18 @@ const routes = [
     icon: <InfoCircleOutlined />,
     showInNavbar: true,
   },
+  {
+    path: "/quiz/question/:quizId",
+    name: "Quiz Question",
+    icon: <BookOutlined />,
+    showInNavbar: false,
+  },
+  {
+    path: "/quiz/result/:quizId",
+    name: "Quiz Result",
+    icon: <BookOutlined />,
+    showInNavbar: false,
+  },
 ];
 
 export default routes;

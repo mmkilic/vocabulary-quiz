@@ -12,6 +12,7 @@ function AppTable({
   setIsVisibleCreate,
   searchApi,
   setSearchApi,
+  buttonName="New",
 }) {
   const [searchText, setSearchText] = useState("");
   const [searchedColumn, setSearchedColumn] = useState("");
@@ -119,7 +120,7 @@ function AppTable({
               Search
             </Button>
             <Button type="primary" onClick={(e) => setIsVisibleCreate(true)}>
-              New Quiz
+              {buttonName}
             </Button>
           </Space>
         </Col>

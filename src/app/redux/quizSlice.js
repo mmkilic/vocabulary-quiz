@@ -1,28 +1,30 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 
-const apiUrl = process.env.REACT_APP_API_URL;
+const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
 const initialState = {
-  quizzes: [],
+  list: [],
   quiz: null,
   qaPair: null,
   answer: null,
   score: null,
 };
 
-export const fetchAll = createAsyncThunk(
-  "quizzes/fetchAll",
-  async () => {
-    const response = await axios.get(`${apiUrl}/items`);
-    return response.data;
-  }
-);
+export const fetchById = createAsyncThunk("quizzes/fetchById", async (id) => {
+  const response = await axios.get(`${apiUrl}/quizzes/${id}`);
+  return response.data;
+});
 
-export const fetchQuiz = createAsyncThunk(
+export const fetchAll = createAsyncThunk("quizzes/fetchAll", async () => {
+  const response = await axios.get(`${apiUrl}/quizzes`);
+  return response.data;
+});
+
+export const fetchSearch = createAsyncThunk(
   "quizzes/fetchQuiz",
   async (search) => {
-    const response = await axios.get(`${apiUrl}/items/search`, {
+    const response = await axios.get(`${apiUrl}/quizzes/search`, {
       headers: { "Content-Type": "application/json" },
       params: { search },
     });
@@ -32,13 +34,13 @@ export const fetchQuiz = createAsyncThunk(
 
 export const fetchStart = createAsyncThunk(
   "quizzes/fetchStart",
-  async (newItem, { rejectWithValue }) => {
+  async (quizName, { rejectWithValue }) => {
     try {
       const response = await axios({
         method: "post",
-        url: `${apiUrl}/items`,
+        url: `${apiUrl}/quizzes/start-new`,
         headers: { "Content-Type": "application/json" },
-        data: JSON.stringify(newItem),
+        params: { quizName },
       });
       return response.data;
     } catch (error) {
@@ -49,10 +51,13 @@ export const fetchStart = createAsyncThunk(
 
 export const fetchNextQA = createAsyncThunk(
   "quizzes/fetchNextQA",
-  async (itemId, { rejectWithValue }) => {
+  async (quizId, { rejectWithValue }) => {
     try {
-      const response = await axios.get(`${apiUrl}/items/${itemId}`, {
+      const response = await axios({
+        method: "post",
+        url: `${apiUrl}/quizzes/next-qa`,
         headers: { "Content-Type": "application/json" },
+        params: { id: quizId },
       });
       return response.data;
     } catch (error) {
@@ -63,13 +68,13 @@ export const fetchNextQA = createAsyncThunk(
 
 export const fetchAnswer = createAsyncThunk(
   "quizzes/fetchAnswer",
-  async (updatedItem, { rejectWithValue }) => {
+  async (answerRequest, { rejectWithValue }) => {
     try {
       const response = await axios({
-        method: "put",
-        url: `${apiUrl}/items`,
+        method: "post",
+        url: `${apiUrl}/quizzes/answer`,
         headers: { "Content-Type": "application/json" },
-        data: JSON.stringify(updatedItem),
+        data: JSON.stringify(answerRequest),
       });
       return response.data;
     } catch (error) {
@@ -82,7 +87,7 @@ export const fetchScore = createAsyncThunk(
   "quizzes/fetchScore",
   async (item, { rejectWithValue }) => {
     try {
-      await axios.delete(`${apiUrl}/items`, {
+      await axios.delete(`${apiUrl}/quizzes`, {
         headers: { "Content-Type": "application/json" },
         data: JSON.stringify(item),
       });
@@ -98,11 +103,14 @@ export const quizSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder
-      .addCase(fetchAll.fulfilled, (state, action) => {
-        state.quizzes = action.payload;
-      })
-      .addCase(fetchQuiz.fulfilled, (state, action) => {
+      .addCase(fetchById.fulfilled, (state, action) => {
         state.quiz = action.payload;
+      })
+      .addCase(fetchAll.fulfilled, (state, action) => {
+        state.list = action.payload;
+      })
+      .addCase(fetchSearch.fulfilled, (state, action) => {
+        state.list = action.payload;
       })
       .addCase(fetchStart.fulfilled, (state, action) => {
         state.quiz = action.payload;

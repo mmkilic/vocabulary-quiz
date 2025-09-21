@@ -51,7 +51,7 @@ function QuizPage() {
   };
 
   const handleModalContinue = async (record) => {
-    router.push(`/quiz/question/${record.id}`);
+    router.push(`/quiz/question?quizId=${record.id}`);
   };
 
   const columns = (getColumnSearchProps) => [

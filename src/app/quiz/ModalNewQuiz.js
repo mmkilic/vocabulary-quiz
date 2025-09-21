@@ -56,7 +56,7 @@ function ModalNewQuiz({ isVisible, setVisible }) {
   const onFinish = async (formValues) => {
     const quiz = await startAttitude(formValues);
     if (quiz?.id) {
-      router.push(`/quiz/${quiz.id}`);
+      router.push(`/quiz/question?quizId=${quiz.id}`);
     }
   };
 

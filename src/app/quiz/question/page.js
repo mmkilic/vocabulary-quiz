@@ -1,13 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { message, Input, Button, Card } from "antd";
 import { useSelector, useDispatch } from "react-redux";
-import { fetchNextQA, fetchAnswer } from "../../../redux/quizSlice";
+import { fetchNextQA, fetchAnswer } from "../../redux/quizSlice";
 
 export default function QuizQuestionPage() {
-  const { quizId } = useParams();
+  const [quizId, setQuizId] = useState(null);
   const [messageApi, contextHolder] = message.useMessage();
   const router = useRouter();
   const dispatch = useDispatch();
@@ -20,14 +20,12 @@ export default function QuizQuestionPage() {
     error: (errorMessage) =>
       messageApi.open({ type: "error", content: errorMessage, duration: 10 }),
     success: (successMessage) =>
-      messageApi.open({
-        type: "success",
-        content: successMessage,
-        duration: 5,
-      }),
+      messageApi.open({ type: "success", content: successMessage, duration: 5 }),
   };
 
   useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    setQuizId(params.get("quizId"));
     if (quizId) {
       dispatch(fetchNextQA(quizId));
       setSubmitted(false);
@@ -37,8 +35,8 @@ export default function QuizQuestionPage() {
   }, [dispatch, quizId]);
 
   useEffect(() => {
-    if (qaPair && qaPair.question == null) {
-      router.push(`/quiz/result/${quizId}`);
+    if (qaPair?.question === null) {
+      router.push(`/quiz/statistic?quizId=${quizId}`);
     }
   }, [qaPair, quizId, router]);
 
@@ -50,16 +48,11 @@ export default function QuizQuestionPage() {
 
     const answerRequest = {
       quizId,
-      qaPair: {
-        ...qaPair,
-        answer: answer,
-      },
+      qaPair: { ...qaPair, answer },
     };
 
     try {
-      const answerResponse = await dispatch(
-        fetchAnswer(answerRequest)
-      ).unwrap();
+      const answerResponse = await dispatch(fetchAnswer(answerRequest)).unwrap();
       setSubmittedResponse(answerResponse);
       setSubmitted(true);
     } catch (error) {
@@ -129,19 +122,11 @@ export default function QuizQuestionPage() {
             </div>
             <div className="mb-2">
               <strong>Your Answer:</strong>{" "}
-              {submittedResponse?.answer ? (
-                submittedResponse?.answer
-              ) : (
-                <em>Not answered</em>
-              )}
+              {submittedResponse?.answer || <em>Not answered</em>}
             </div>
             <div className="mb-2">
               <strong>Correct Answer:</strong>{" "}
-              {submittedResponse?.correctAnswer ? (
-                submittedResponse?.correctAnswer
-              ) : (
-                <em>Not correct answered</em>
-              )}
+              {submittedResponse?.correctAnswer || <em>Not correct answered</em>}
             </div>
             <div className="mb-2">
               <strong>Synonym:</strong> {submittedResponse?.synonym}
@@ -150,7 +135,6 @@ export default function QuizQuestionPage() {
               <strong>English to English:</strong>{" "}
               {submittedResponse?.english2English}
             </div>
-
             <div className="mb-2">
               <strong>Sample Sentence:</strong> {submittedResponse?.sentence}
             </div>

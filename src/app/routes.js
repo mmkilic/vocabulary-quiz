@@ -2,39 +2,39 @@ import { HomeOutlined, BookOutlined, InfoCircleOutlined } from "@ant-design/icon
 
 const routes = [
   {
-    path: "/",
+    path: `/`,
     name: "Home",
     icon: <HomeOutlined />,
     showInNavbar: true,
   },
   {
-    path: "/quiz",
+    path: `/quiz`,
     name: "Quiz",
     icon: <BookOutlined />,
     showInNavbar: true,
   },
   {
-    path: "/word",
+    path: `/word`,
     name: "Word",
     icon: <BookOutlined />,
     showInNavbar: true,
     requiresAuth: true,
   },
   {
-    path: "/about",
+    path: `/about`,
     name: "About",
     icon: <InfoCircleOutlined />,
     showInNavbar: true,
   },
   {
-    path: "/quiz/question/:quizId",
+    path: `/quiz/question`,
     name: "Quiz Question",
     icon: <BookOutlined />,
     showInNavbar: false,
   },
   {
-    path: "/quiz/result/:quizId",
-    name: "Quiz Result",
+    path: `/quiz/statistic`,
+    name: "Quiz Statistic",
     icon: <BookOutlined />,
     showInNavbar: false,
   },

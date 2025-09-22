@@ -120,6 +120,10 @@ function ModalCreateAndEdit({
             <Input />
           </Form.Item>
 
+          <Form.Item label="English To English" name="english2English">
+            <Input />
+          </Form.Item>
+
           <Form.Item label="Synonym" name="synonym">
             <Input />
           </Form.Item>

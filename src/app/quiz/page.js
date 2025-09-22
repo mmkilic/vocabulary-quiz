@@ -89,7 +89,7 @@ function QuizPage() {
       title: "Answered Question",
       dataIndex: "answeredQuestionCount",
       key: "answeredQuestionCount",
-      width: "8%",
+      width: "10%",
       ellipsis: {
         showTitle: true,
       },
@@ -98,7 +98,7 @@ function QuizPage() {
       title: "Total Question",
       dataIndex: "questionCount",
       key: "questionCount",
-      width: "8%",
+      width: "10%",
       ellipsis: {
         showTitle: true,
       },

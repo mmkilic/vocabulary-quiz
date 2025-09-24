@@ -85,6 +85,7 @@ export default function QuizQuestionPage() {
                 placeholder="Your answer"
                 value={answer}
                 onChange={(e) => setAnswer(e.target.value)}
+                onPressEnter={handleSubmit} 
                 disabled={submitted}
                 className="mb-3"
               />

@@ -21,6 +21,19 @@ export const fetchAll = createAsyncThunk("quizzes/fetchAll", async () => {
   return response.data;
 });
 
+export const fetchByUserName = createAsyncThunk(
+  "quizzes/fetchByUserName",
+  async (name) => {
+    const response = await axios({
+      method: "get",
+      url: `${apiUrl}/quizzes/user-name`,
+      headers: { "Content-Type": "application/json" },
+      params: { name },
+    });
+    return response.data;
+  }
+);
+
 export const fetchSearch = createAsyncThunk(
   "quizzes/fetchQuiz",
   async (search) => {
@@ -34,13 +47,13 @@ export const fetchSearch = createAsyncThunk(
 
 export const fetchStart = createAsyncThunk(
   "quizzes/fetchStart",
-  async (quizName, { rejectWithValue }) => {
+  async (newQuiz, { rejectWithValue }) => {
     try {
       const response = await axios({
         method: "post",
         url: `${apiUrl}/quizzes/start-new`,
         headers: { "Content-Type": "application/json" },
-        params: { quizName },
+        data: newQuiz,
       });
       return response.data;
     } catch (error) {
@@ -107,6 +120,9 @@ export const quizSlice = createSlice({
         state.quiz = action.payload;
       })
       .addCase(fetchAll.fulfilled, (state, action) => {
+        state.list = action.payload;
+      })
+      .addCase(fetchByUserName.fulfilled, (state, action) => {
         state.list = action.payload;
       })
       .addCase(fetchSearch.fulfilled, (state, action) => {

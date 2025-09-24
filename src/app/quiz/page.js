@@ -6,7 +6,7 @@ import { CaretRightOutlined } from "@ant-design/icons";
 import { message, Popconfirm, Space } from "antd";
 import AppTable from "../util/AppTable";
 import { useSelector, useDispatch } from "react-redux";
-import { fetchAll, fetchSearch } from "../redux/quizSlice";
+import { fetchByUserName, fetchSearch } from "../redux/quizSlice";
 import ModalNewQuiz from "./ModalNewQuiz";
 
 function QuizPage() {
@@ -35,7 +35,13 @@ function QuizPage() {
   };
 
   useEffect(() => {
-    dispatch(fetchAll());
+    dispatch(
+      fetchByUserName(
+        localStorage.getItem("vocab-user")
+          ? localStorage.getItem("vocab-user")
+          : "guest"
+      )
+    );
   }, [dispatch]);
 
   const handleSearchApi = async () => {
@@ -134,10 +140,10 @@ function QuizPage() {
           buttonName="New Quiz"
         />
       </div>
-        <ModalNewQuiz
+      <ModalNewQuiz
         isVisible={isVisibleNewQuiz}
         setVisible={setVisibleNewQuiz}
-        />
+      />
     </>
   );
 }

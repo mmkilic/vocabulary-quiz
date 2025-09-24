@@ -3,6 +3,7 @@ import { Button, Form, Input, Modal, message, Select } from "antd";
 import { useRouter } from "next/navigation";
 import { useSelector, useDispatch } from "react-redux";
 import { fetchStart } from "../redux/quizSlice";
+import axios from "axios";
 
 function ModalNewQuiz({ isVisible, setVisible }) {
   const [messageApi, contextHolder] = message.useMessage();
@@ -42,7 +43,14 @@ function ModalNewQuiz({ isVisible, setVisible }) {
   const startAttitude = async (formValues) => {
     setLoading(true);
     try {
-      const quiz = await dispatch(fetchStart(formValues.quizName)).unwrap();
+      const quiz = await dispatch(
+        fetchStart({
+          quizName: formValues.quizName,
+          userName: localStorage.getItem("vocab-user")
+            ? localStorage.getItem("vocab-user")
+            : "guest",
+        })
+      ).unwrap();
       cancel();
       return quiz;
     } catch (error) {

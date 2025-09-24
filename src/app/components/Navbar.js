@@ -1,46 +1,21 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useEffect, useState, useMemo, useCallback } from "react";
 import { Menu, Button } from "antd";
 import routes from "../routes";
-
+import { useAuth } from "../components/AuthContext";
 
 export default function Navbar() {
-  const router = useRouter();
-  const [auth, setAuth] = useState(false);
+  const { user, logout } = useAuth();
+  const admin = user === "mehmet";
 
-  useEffect(() => {
-  if (typeof window === "undefined") return;
-
-  const checkAuth = () => setAuth(Boolean(localStorage.getItem("user")));
-
-  checkAuth(); // initial check
-  router.refresh?.(); // optional: force refresh in Next 13+
-
-  // listen to route changes
-  window.addEventListener("storage", checkAuth);
-  return () => window.removeEventListener("storage", checkAuth);
-}, [router]);
-
-  const menuItems = useMemo(
-    () =>
-      routes
-        .filter((r) => r.showInNavbar && (!r.requiresAuth || auth))
-        .map((r) => ({
-          key: r.path,
-          label: <Link href={r.path}>{r.name}</Link>,
-          icon: r.icon || null,
-        })),
-    [auth]
-  );
-
-  const logout = useCallback(() => {
-    localStorage.removeItem("user");
-    setAuth(false);
-    router.push("/");
-  }, [router]);
+  const menuItems = routes
+    .filter((r) => r.showInNavbar && (!r.requiresAuth || admin))
+    .map((r) => ({
+      key: r.path,
+      label: <Link href={r.path}>{r.name}</Link>,
+      icon: r.icon || null,
+    }));
 
   return (
     <div className="shadow-md bg-white">
@@ -52,7 +27,7 @@ export default function Navbar() {
           style={{ flex: 1, maxWidth: 400 }}
         />
         <div>
-          {auth ? (
+          {user ? (
             <Button onClick={logout}>Logout</Button>
           ) : (
             <Link href="/login">

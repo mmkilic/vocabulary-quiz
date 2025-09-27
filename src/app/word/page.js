@@ -76,7 +76,8 @@ function WordPage() {
       ellipsis: {
         showTitle: true,
       },
-      ...getColumnSearchProps("english"),
+      sorter: (a, b) => a.english.toLowerCase().localeCompare(b.english.toLowerCase()),
+      sortDirections: ["descend", "ascend"],
     },
     {
       title: "Turkish",
@@ -86,7 +87,8 @@ function WordPage() {
       ellipsis: {
         showTitle: true,
       },
-      ...getColumnSearchProps("turkish"),
+      sorter: (a, b) => a.turkish.toLowerCase().localeCompare(b.turkish.toLowerCase()),
+      sortDirections: ["descend", "ascend"],
     },
     {
       title: "Synonym",

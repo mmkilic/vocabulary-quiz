@@ -92,22 +92,24 @@ function QuizPage() {
       render: (completed) => (completed ? "✅" : "🔄"),
     },
     {
-      title: "Answered Question",
-      dataIndex: "answeredQuestionCount",
-      key: "answeredQuestionCount",
+      title: "Ratio",
+      dataIndex: "successionRatio",
+      key: "successionRatio",
       width: "10%",
       ellipsis: {
         showTitle: true,
       },
+      render : (successionRatio) => `% ${successionRatio}`,
     },
     {
-      title: "Total Question",
+      title: "Questions",
       dataIndex: "questionCount",
       key: "questionCount",
-      width: "10%",
+      width: "12%",
       ellipsis: {
         showTitle: true,
       },
+      render : (_,item) => `${item.answeredQuestionCount} / ${item.questionCount}`,
     },
     {
       title: "Actions",

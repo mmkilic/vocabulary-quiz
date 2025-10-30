@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { message, Input, Button, Card } from "antd";
 import { useSelector, useDispatch } from "react-redux";
-import { fetchNextQA, fetchAnswer } from "../../redux/quizSlice";
+import { fetchNextQA, fetchHint, fetchAnswer } from "../../redux/quizSlice";
 
 export default function QuizQuestionPage() {
   const [quizId, setQuizId] = useState(null);
@@ -15,12 +15,18 @@ export default function QuizQuestionPage() {
   const [answer, setAnswer] = useState("");
   const [submittedResponse, setSubmittedResponse] = useState(null);
   const [submitted, setSubmitted] = useState(false);
+  const [hint, setHint] = useState(false);
+  const [hintSentence, setHintSentence] = useState(null);
 
   const msg = {
     error: (errorMessage) =>
       messageApi.open({ type: "error", content: errorMessage, duration: 10 }),
     success: (successMessage) =>
-      messageApi.open({ type: "success", content: successMessage, duration: 5 }),
+      messageApi.open({
+        type: "success",
+        content: successMessage,
+        duration: 5,
+      }),
   };
 
   useEffect(() => {
@@ -52,13 +58,18 @@ export default function QuizQuestionPage() {
     };
 
     try {
-      const answerResponse = await dispatch(fetchAnswer(answerRequest)).unwrap();
+      const answerResponse = await dispatch(
+        fetchAnswer(answerRequest)
+      ).unwrap();
       setSubmittedResponse(answerResponse);
       setSubmitted(true);
     } catch (error) {
       msg.error("Response issue!");
       setSubmitted(false);
     }
+
+    setHint(false);
+    setHintSentence(null);
   };
 
   const handleNextQuestion = () => {
@@ -66,6 +77,18 @@ export default function QuizQuestionPage() {
     setSubmitted(false);
     setAnswer("");
     setSubmittedResponse(null);
+  };
+
+  const handleHint = async () => {
+    try {
+      const response = await dispatch(
+        fetchHint(qaPair.id)
+      ).unwrap();
+      setHintSentence(response?.sentence);
+      setHint(true);
+    } catch (error) {
+      msg.error("Response issue!");
+    }
   };
 
   return (
@@ -85,10 +108,16 @@ export default function QuizQuestionPage() {
                 placeholder="Your answer"
                 value={answer}
                 onChange={(e) => setAnswer(e.target.value)}
-                onPressEnter={handleSubmit} 
+                onPressEnter={handleSubmit}
                 disabled={submitted}
                 className="mb-3"
               />
+
+              {hint && (
+                <p className="mb-3">
+                  <strong>Hint:</strong> {hintSentence}
+                </p>
+              )}
 
               <Button
                 type="primary"
@@ -97,6 +126,15 @@ export default function QuizQuestionPage() {
                 disabled={submitted || !answer}
               >
                 Submit Answer
+              </Button>
+
+              <Button
+                type="primary"
+                onClick= {handleHint}
+                className="w-full"
+                disabled={hint || answer}
+              >
+                Get a Hint
               </Button>
 
               {submitted && (
@@ -127,7 +165,9 @@ export default function QuizQuestionPage() {
             </div>
             <div className="mb-2">
               <strong>Correct Answer:</strong>{" "}
-              {submittedResponse?.correctAnswer || <em>Not correct answered</em>}
+              {submittedResponse?.correctAnswer || (
+                <em>Not correct answered</em>
+              )}
             </div>
             <div className="mb-2">
               <strong>Synonym:</strong> {submittedResponse?.synonym}

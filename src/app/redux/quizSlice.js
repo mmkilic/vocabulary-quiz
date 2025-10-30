@@ -9,6 +9,7 @@ const initialState = {
   qaPair: null,
   answer: null,
   score: null,
+  hint: null,
 };
 
 export const fetchById = createAsyncThunk("quizzes/fetchById", async (id) => {
@@ -40,6 +41,17 @@ export const fetchSearch = createAsyncThunk(
     const response = await axios.get(`${apiUrl}/quizzes/search`, {
       headers: { "Content-Type": "application/json" },
       params: { search },
+    });
+    return response.data;
+  }
+);
+
+export const fetchHint = createAsyncThunk(
+  "quizzes/fetchHint",
+  async (qaPairId) => {
+    const response = await axios.get(`${apiUrl}/quizzes/hint`, {
+      headers: { "Content-Type": "application/json" },
+      params: { qaPairId },
     });
     return response.data;
   }
@@ -127,6 +139,9 @@ export const quizSlice = createSlice({
       })
       .addCase(fetchSearch.fulfilled, (state, action) => {
         state.list = action.payload;
+      })
+      .addCase(fetchHint.fulfilled, (state, action) => {
+        state.hint = action.payload;
       })
       .addCase(fetchStart.fulfilled, (state, action) => {
         state.quiz = action.payload;

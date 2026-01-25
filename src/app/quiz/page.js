@@ -116,6 +116,9 @@ function QuizPage() {
       dataIndex: "operation",
       key: "operation",
       width: "10%",
+      ellipsis: {
+        showTitle: true,
+      },
       render: (_, record) =>
         quizzes.list.length >= 1 ? (
           <Space>

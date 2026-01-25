@@ -21,6 +21,13 @@ const routes = [
     requiresAuth: true,
   },
   {
+    path: `/report`,
+    name: "Report",
+    icon: <BookOutlined />,
+    showInNavbar: true,
+    requiresAuth: true,
+  },
+  {
     path: `/about`,
     name: "About",
     icon: <InfoCircleOutlined />,

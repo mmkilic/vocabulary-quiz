@@ -1,67 +1,54 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { EditOutlined } from "@ant-design/icons";
-import { message, Popconfirm, Space } from "antd";
+import { InfoCircleOutlined } from "@ant-design/icons";
+import { message, Popconfirm, Space, Progress } from "antd";
 import AppTable from "../util/AppTable";
 import { useSelector, useDispatch } from "react-redux";
-import { fetchAll, fetchSearch } from "../redux/wordSlice";
-import ModalCreateAndEdit from "./ModalCreateAndEdit";
+import { fetchAll, fetchSearch } from "../redux/reportSlice";
+import ModalInfo from "./ModalInfo";
+import { useAuth } from "../components/AuthContext";
 
-function WordPage() {
-  const [messageApi, contextHolder] = message.useMessage();
+function ReportPage() {
+  const { user } = useAuth();
   const dispatch = useDispatch();
   const [searchApi, setSearchApi] = useState("");
-  const [isUpdated, setUpdated] = useState(false);
-  const [isVisibleCreateAndEdit, setVisibleCreateAndEdit] = useState(false);
-  const words = useSelector((store) => store.words);
-  const [selectedWord, setSelectedWord] = useState(null);
-
-  const msg = {
-    error: (errorMessage) => {
-      messageApi.open({
-        type: "error",
-        content: errorMessage,
-        duration: 10,
-      });
-    },
-    success: (successMessage) => {
-      messageApi.open({
-        type: "success",
-        content: successMessage,
-        duration: 5,
-      });
-    },
-  };
+  const [isVisibleInfo, setVisibleInfo] = useState(false);
+  const reports = useSelector((store) => store.reports);
+  const [selectedReport, setSelectedReport] = useState(null);
 
   useEffect(() => {
-    dispatch(fetchAll());
-  }, [dispatch, isUpdated]);
+    if(user){
+      dispatch(fetchAll(user));
+    }
+  }, [dispatch, user]);
 
   const handleSearchApi = async () => {
     try {
-      await dispatch(fetchSearch(searchApi)).unwrap();
+      await dispatch(fetchSearch({
+        user: user,
+        search: searchApi
+      })).unwrap();
     } catch (error) {
       console.log(error);
     }
   };
 
   const handleModalCreate = async () => {
-    setSelectedWord(null);
-    setVisibleCreateAndEdit(true);
+    // No implementation needed for info modal
   };
 
-  const handleModalEdit = async (record) => {
-    setSelectedWord(record);
-    setVisibleCreateAndEdit(true);
+  const handleModalInfo = async (record) => {
+    setSelectedReport(record);
+    setVisibleInfo(true);
   };
 
   const columns = (getColumnSearchProps) => [
     {
-      title: "Id",
+      title: "Word Id",
       dataIndex: "id",
       key: "id",
-      width: "6%",
+      width: "7%",
       ellipsis: {
         showTitle: true,
       },
@@ -72,7 +59,7 @@ function WordPage() {
       title: "English",
       dataIndex: "english",
       key: "english",
-      width: "13%",
+      width: "15%",
       ellipsis: {
         showTitle: true,
       },
@@ -83,7 +70,7 @@ function WordPage() {
       title: "Turkish",
       dataIndex: "turkish",
       key: "turkish",
-      width: "13%",
+      width: "15%",
       ellipsis: {
         showTitle: true,
       },
@@ -94,55 +81,67 @@ function WordPage() {
       title: "Synonym",
       dataIndex: "synonym",
       key: "synonym",
+      className: "hidden md:table-cell",
       ellipsis: {
         showTitle: true,
       },
       ...getColumnSearchProps("synonym"),
     },
     {
-      title: "English-English",
-      dataIndex: "english2English",
-      key: "english2English",
+      title: "Figures",
+      dataIndex: "figures",
+      key: "figures",
+      width: "10%",
       ellipsis: {
         showTitle: true,
       },
-      ...getColumnSearchProps("english2English"),
+      render: (_, record) => (
+        <div style={{ textAlign: 'center' }}>
+          {record?.totalCorrectAnswerCount} / {record?.totalAnsweredQuestionCount}
+        </div>
+      ),
     },
     {
-      title: "Sentence",
-      dataIndex: "sentence",
-      key: "sentence",
+      title: "Succession Rate",
+      dataIndex: "successionRate",
+      key: "successionRate",
+      width: "16%",
       ellipsis: {
         showTitle: true,
       },
-      ...getColumnSearchProps("sentence"),
+      sorter: (a, b) => a.successionRate - b.successionRate,
+      sortDirections: ["descend", "ascend"],
+      render: (text) => (
+        <Progress percent={Math.round(text * 100)} size="small" />
+      ),
     },
     {
       title: "Actions",
       dataIndex: "operation",
       key: "operation",
-      width: "8%",
+      width: "6%",
       ellipsis: {
         showTitle: true,
       },
       render: (_, record) =>
-        words.list?.length >= 1 ? (
-          <Space>
-            <EditOutlined
-              title="Edit"
-              onClick={() => handleModalEdit(record)}
-            />
-          </Space>
+        reports.list?.length >= 1 ? (
+          <div style={{ textAlign: 'center' }}>
+            <Space>
+              <InfoCircleOutlined
+                title="info"
+                onClick={() => handleModalInfo(record)}
+              />
+            </Space>
+          </div>
         ) : null,
     },
   ];
 
   return (
     <>
-      {contextHolder}
       <div className="px-6 py-4 my-6 mx-4">
         <AppTable
-          dataSource={words?.list ?? []}
+          dataSource={reports?.list ?? []}
           handleSearchApi={handleSearchApi}
           setIsVisibleCreate={handleModalCreate}
           searchApi={searchApi}
@@ -150,15 +149,13 @@ function WordPage() {
           getColumns={(getColumnSearchProps) => columns(getColumnSearchProps)}
         />
       </div>
-      <ModalCreateAndEdit
-        isVisible={isVisibleCreateAndEdit}
-        setIsVisible={setVisibleCreateAndEdit}
-        isUpdated={isUpdated}
-        setUpdated={setUpdated}
-        word={selectedWord}
+      <ModalInfo
+        isVisible={isVisibleInfo}
+        setIsVisible={setVisibleInfo}
+        data={selectedReport?.answerList || []}
       />
     </>
   );
 }
 
-export default WordPage;
+export default ReportPage;

@@ -118,6 +118,17 @@ function WordPage() {
       ...getColumnSearchProps("sentence"),
     },
     {
+      title: "Level",
+      dataIndex: "level",
+      key: "level",
+      ellipsis: {
+        showTitle: true,
+      },
+      sorter: (a, b) => a.level - b.level,
+      sortDirections: ["descend", "ascend"],
+      ...getColumnSearchProps("level"),
+    },
+    {
       title: "Actions",
       dataIndex: "operation",
       key: "operation",
@@ -129,6 +140,7 @@ function WordPage() {
         words.list?.length >= 1 ? (
           <Space>
             <EditOutlined
+              key="edit"
               title="Edit"
               onClick={() => handleModalEdit(record)}
             />

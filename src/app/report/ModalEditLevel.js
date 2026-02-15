@@ -1,17 +1,16 @@
 import { React, useState, useEffect, useRef } from "react";
 import { Button, Form, Input, Modal, message, Select } from "antd";
-import { useRouter } from "next/navigation";
 import { useSelector, useDispatch } from "react-redux";
-import { fetchStart } from "../redux/quizSlice";
-import axios from "axios";
+import { fetchUpdateLevel } from "../redux/reportSlice";
 
-function ModalNewQuiz({ isVisible, setVisible }) {
+const { Option } = Select;
+
+function ModalEditLevel({ isVisible, setVisible, data }) {
   const [messageApi, contextHolder] = message.useMessage();
   const dispatch = useDispatch();
-  const router = useRouter();
+  const levels = useSelector((state) => state.enums.levels);
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
-  const levels = useSelector((state) => state.enums.levels);
 
   const msg = {
     error: (errorMessage) => {
@@ -36,37 +35,31 @@ function ModalNewQuiz({ isVisible, setVisible }) {
   };
 
   useEffect(() => {
-    if (isVisible) {
-      form.resetFields();
+    if (isVisible && data) {
+      form.setFieldsValue({
+        wordId: data.wordId,
+        level: data.level,
+      });
     }
-  }, [isVisible]);
+  }, [isVisible, data, form]);
 
-  const startAttitude = async (formValues) => {
+  const onFinish = async (formValues) => {
     setLoading(true);
     try {
-      const quiz = await dispatch(
-        fetchStart({
-          quizName: formValues.quizName,
-          quizLevel: formValues.level,
-          userName: localStorage.getItem("vocab-user")
-            ? localStorage.getItem("vocab-user")
-            : "guest",
+      const word = await dispatch(
+        fetchUpdateLevel({
+          wordId: formValues.wordId,
+          level: formValues.level,
         }),
       ).unwrap();
+
+      msg.success("Level updated successfully!");
       cancel();
-      return quiz;
     } catch (error) {
-      msg.error("Registration issue!");
+      msg.error("Update failed!");
       console.log(error);
     } finally {
       setLoading(false);
-    }
-  };
-
-  const onFinish = async (formValues) => {
-    const quiz = await startAttitude(formValues);
-    if (quiz?.id) {
-      router.push(`/quiz/question?quizId=${quiz.id}`);
     }
   };
 
@@ -79,7 +72,7 @@ function ModalNewQuiz({ isVisible, setVisible }) {
     <>
       {contextHolder}
       <Modal
-        title="Quiz Start"
+        title="Edit Level"
         width={600}
         confirmLoading={loading}
         open={isVisible}
@@ -93,12 +86,8 @@ function ModalNewQuiz({ isVisible, setVisible }) {
           style={{ maxWidth: 600 }}
           onFinish={onFinish}
         >
-          <Form.Item
-            label="Quiz Name"
-            name="quizName"
-            rules={[{ required: true, message: "Mandatory Field!" }]}
-          >
-            <Input />
+          <Form.Item label="Word ID" name="wordId">
+            <Input disabled={true} />
           </Form.Item>
 
           <Form.Item label="Level" name="level">
@@ -114,7 +103,7 @@ function ModalNewQuiz({ isVisible, setVisible }) {
 
           <Form.Item label={null}>
             <Button type="primary" htmlType="submit" loading={loading}>
-              Start
+              Update
             </Button>
           </Form.Item>
         </Form>
@@ -123,4 +112,4 @@ function ModalNewQuiz({ isVisible, setVisible }) {
   );
 }
 
-export default ModalNewQuiz;
+export default ModalEditLevel;

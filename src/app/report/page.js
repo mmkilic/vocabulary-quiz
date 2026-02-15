@@ -1,13 +1,14 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { InfoCircleOutlined } from "@ant-design/icons";
+import { InfoCircleOutlined, EditOutlined } from "@ant-design/icons";
 import { message, Popconfirm, Space, Progress } from "antd";
 import AppTable from "../util/AppTable";
 import { useSelector, useDispatch } from "react-redux";
 import { fetchAll, fetchSearch } from "../redux/reportSlice";
 import ModalInfo from "./ModalInfo";
 import { useAuth } from "../components/AuthContext";
+import ModalEditLevel from "./ModalEditLevel";
 
 function ReportPage() {
   const { user } = useAuth();
@@ -16,6 +17,7 @@ function ReportPage() {
   const [isVisibleInfo, setVisibleInfo] = useState(false);
   const reports = useSelector((store) => store.reports);
   const [selectedReport, setSelectedReport] = useState(null);
+  const [isVisibleEditLevel, setVisibleEditLevel] = useState(false);
 
   useEffect(() => {
     if(user){
@@ -46,13 +48,13 @@ function ReportPage() {
   const columns = (getColumnSearchProps) => [
     {
       title: "Word Id",
-      dataIndex: "id",
-      key: "id",
+      dataIndex: "wordId",
+      key: "wordId",
       width: "7%",
       ellipsis: {
         showTitle: true,
       },
-      sorter: (a, b) => a.id - b.id,
+      sorter: (a, b) => a.wordId - b.wordId,
       sortDirections: ["descend", "ascend"],
     },
     {
@@ -86,6 +88,19 @@ function ReportPage() {
         showTitle: true,
       },
       ...getColumnSearchProps("synonym"),
+    },
+    {
+      title: "Level",
+      dataIndex: "level",
+      key: "level",
+      className: "hidden md:table-cell",
+      width: "8%",
+      ellipsis: {
+        showTitle: true,
+      },
+      sorter: (a, b) => a.level?.toLowerCase().localeCompare(b.level?.toLowerCase()),
+      sortDirections: ["descend", "ascend"],
+      ...getColumnSearchProps("level"),
     },
     {
       title: "Figures",
@@ -128,8 +143,17 @@ function ReportPage() {
           <div style={{ textAlign: 'center' }}>
             <Space>
               <InfoCircleOutlined
+                key="info"
                 title="info"
                 onClick={() => handleModalInfo(record)}
+              />
+              <EditOutlined 
+                key="edit"
+                title="edit level"
+                onClick={() => {
+                  setSelectedReport(record);
+                  setVisibleEditLevel(true);
+                }}
               />
             </Space>
           </div>
@@ -153,6 +177,11 @@ function ReportPage() {
         isVisible={isVisibleInfo}
         setIsVisible={setVisibleInfo}
         data={selectedReport?.answerList || []}
+      />
+      <ModalEditLevel
+        isVisible={isVisibleEditLevel}
+        setVisible={setVisibleEditLevel}
+        data={selectedReport}
       />
     </>
   );

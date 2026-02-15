@@ -82,6 +82,17 @@ function QuizPage() {
       ...getColumnSearchProps("totalQuestionCount"),
     },
     {
+      title: "Quiz Level",
+      dataIndex: "quizLevel",
+      key: "quizLevel",
+      ellipsis: {
+        showTitle: true,
+      },
+      sorter: (a, b) => a.level.localeCompare(b.level),
+      sortDirections: ["descend", "ascend"],
+      ...getColumnSearchProps("level"),
+    },
+    {
       title: "Completed",
       dataIndex: "completed",
       key: "completed",
@@ -123,6 +134,7 @@ function QuizPage() {
         quizzes.list.length >= 1 ? (
           <Space>
             <CaretRightOutlined
+              key="continue"
               title="Continue"
               onClick={() => handleModalContinue(record)}
             />

@@ -46,6 +46,23 @@ export const fetchSave = createAsyncThunk(
   }
 );
 
+export const fetchUpdateLevel = createAsyncThunk(
+  "words/fetchUpdateLevel",
+  async (levelUpdate, { rejectWithValue }) => {
+    try {
+      const response = await axios({
+        method: "put",
+        url: `${apiUrl}/words/level-updater`,
+        headers: { "Content-Type": "application/json" },
+        data: JSON.stringify(levelUpdate),
+      });
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || "Unhandled fail");
+    }
+  }
+);
+
 export const wordSlice = createSlice({
   name: "words",
   initialState,
@@ -62,6 +79,9 @@ export const wordSlice = createSlice({
         state.list = action.payload;
       })
       .addCase(fetchSave.fulfilled, (state, action) => {
+        state.entity = action.payload;
+      })
+      .addCase(fetchUpdateLevel.fulfilled, (state, action) => {
         state.entity = action.payload;
       });
   },

@@ -13,6 +13,7 @@ function ModalCreateAndEdit({
   word = null,
 }) {
   const [messageApi, contextHolder] = message.useMessage();
+  const levels = useSelector((state) => state.enums.levels);
   const dispatch = useDispatch();
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
@@ -130,6 +131,17 @@ function ModalCreateAndEdit({
 
           <Form.Item label="Sentence" name="sentence">
             <Input />
+          </Form.Item>
+
+          <Form.Item label="Level" name="level">
+            <Select placeholder="Select">
+              {Array.isArray(levels) &&
+                levels.map((l) => (
+                  <Option key={l} value={l}>
+                    {`${l}`}
+                  </Option>
+                ))}
+            </Select>
           </Form.Item>
 
           <Form.Item label={null}>

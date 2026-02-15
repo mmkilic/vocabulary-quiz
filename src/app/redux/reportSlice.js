@@ -18,13 +18,30 @@ export const fetchSearch = createAsyncThunk(
   async (searchData) => {
     const response = await axios.get(`${apiUrl}/reports/search`, {
       headers: { "Content-Type": "application/json" },
-      params: { 
+      params: {
         user: searchData.user,
-        search: searchData.search 
+        search: searchData.search,
       },
     });
     return response.data;
-  }
+  },
+);
+
+export const fetchUpdateLevel = createAsyncThunk(
+  "reports/fetchUpdateLevel",
+  async (levelUpdate, { rejectWithValue }) => {
+    try {
+      const response = await axios({
+        method: "put",
+        url: `${apiUrl}/words/level-updater`,
+        headers: { "Content-Type": "application/json" },
+        data: JSON.stringify(levelUpdate),
+      });
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || "Unhandled fail");
+    }
+  },
 );
 
 export const reportSlice = createSlice({
@@ -38,6 +55,13 @@ export const reportSlice = createSlice({
       })
       .addCase(fetchSearch.fulfilled, (state, action) => {
         state.list = action.payload;
+      })
+      .addCase(fetchUpdateLevel.fulfilled, (state, action) => {
+        const updatedWord = action.payload;
+        const item = state.list.find((r) => r.wordId === updatedWord.id);
+        if (item) {
+          item.level = updatedWord.level;
+        }
       });
   },
 });

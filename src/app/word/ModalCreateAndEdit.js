@@ -4,6 +4,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { fetchSave } from "../redux/wordSlice";
 
 const { Option } = Select;
+const { TextArea } = Input;
 
 function ModalCreateAndEdit({
   isVisible,
@@ -131,6 +132,10 @@ function ModalCreateAndEdit({
 
           <Form.Item label="Sentence" name="sentence">
             <Input />
+          </Form.Item>
+
+          <Form.Item label="Notes" name="notes">
+            <TextArea rows={2} />
           </Form.Item>
 
           <Form.Item label="Level" name="level">

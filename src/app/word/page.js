@@ -2,11 +2,14 @@
 
 import { useState, useEffect } from "react";
 import { EditOutlined } from "@ant-design/icons";
-import { message, Popconfirm, Space } from "antd";
+import { message, Popconfirm, Space, Typography } from "antd";
 import AppTable from "../util/AppTable";
 import { useSelector, useDispatch } from "react-redux";
 import { fetchAll, fetchSearch } from "../redux/wordSlice";
 import ModalCreateAndEdit from "./ModalCreateAndEdit";
+import WordModalInfo from "./WordModalInfo";
+
+const { Link } = Typography;
 
 function WordPage() {
   const [messageApi, contextHolder] = message.useMessage();
@@ -14,6 +17,7 @@ function WordPage() {
   const [searchApi, setSearchApi] = useState("");
   const [isUpdated, setUpdated] = useState(false);
   const [isVisibleCreateAndEdit, setVisibleCreateAndEdit] = useState(false);
+  const [isVisibleInfo, setIsVisibleInfo] = useState(false);
   const words = useSelector((store) => store.words);
   const [selectedWord, setSelectedWord] = useState(null);
 
@@ -56,6 +60,11 @@ function WordPage() {
     setVisibleCreateAndEdit(true);
   };
 
+  const handleInfo = async (record) => {
+    setSelectedWord(record);
+    setIsVisibleInfo(true);
+  };
+
   const columns = (getColumnSearchProps) => [
     {
       title: "Id",
@@ -67,6 +76,8 @@ function WordPage() {
       },
       sorter: (a, b) => a.id - b.id,
       sortDirections: ["descend", "ascend"],
+      render: (id, record) =>
+          <Link onClick={(e) => handleInfo(record)}>{id}</Link>,
     },
     {
       title: "English",
@@ -168,6 +179,11 @@ function WordPage() {
         isUpdated={isUpdated}
         setUpdated={setUpdated}
         word={selectedWord}
+      />
+      <WordModalInfo
+        isVisible={isVisibleInfo}
+        setIsVisible={setIsVisibleInfo}
+        wordId={selectedWord?.id}
       />
     </>
   );

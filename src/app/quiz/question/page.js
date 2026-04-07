@@ -59,7 +59,7 @@ export default function QuizQuestionPage() {
 
     try {
       const answerResponse = await dispatch(
-        fetchAnswer(answerRequest)
+        fetchAnswer(answerRequest),
       ).unwrap();
       setSubmittedResponse(answerResponse);
       setSubmitted(true);
@@ -81,9 +81,7 @@ export default function QuizQuestionPage() {
 
   const handleHint = async () => {
     try {
-      const response = await dispatch(
-        fetchHint(qaPair.id)
-      ).unwrap();
+      const response = await dispatch(fetchHint(qaPair.id)).unwrap();
       setHintSentence(response?.sentence);
       setHint(true);
     } catch (error) {
@@ -130,7 +128,7 @@ export default function QuizQuestionPage() {
 
               <Button
                 type="primary"
-                onClick= {handleHint}
+                onClick={handleHint}
                 className="w-full"
                 disabled={hint || answer}
               >
@@ -154,7 +152,14 @@ export default function QuizQuestionPage() {
 
         {submittedResponse && (
           <Card className="mt-6 shadow-md rounded-lg p-4">
-            <h3 className="text-lg font-medium mb-3">Submitted Response</h3>
+            <div className="mb-3">
+              <strong>Result:</strong>{" "}
+              {submittedResponse?.correct ? (
+                <span className="text-green-600 font-semibold">Correct ✅</span>
+              ) : (
+                <span className="text-red-600 font-semibold">Incorrect ❌</span>
+              )}
+            </div>
             <div className="mb-2">
               <strong>Question {submittedResponse?.no}:</strong>{" "}
               {submittedResponse?.question}
@@ -170,22 +175,20 @@ export default function QuizQuestionPage() {
               )}
             </div>
             <div className="mb-2">
-              <strong>Synonym:</strong> {submittedResponse?.synonym}
+              <strong>Synonym:</strong>
+              {submittedResponse?.synonym}
             </div>
             <div className="mb-2">
               <strong>English to English:</strong>{" "}
               {submittedResponse?.english2English}
             </div>
             <div className="mb-2">
-              <strong>Sample Sentence:</strong> {submittedResponse?.sentence}
+              <strong>Sample Sentence:</strong>
+              {submittedResponse?.sentence}
             </div>
-            <div>
-              <strong>Result:</strong>{" "}
-              {submittedResponse?.correct ? (
-                <span className="text-green-600 font-semibold">Correct ✅</span>
-              ) : (
-                <span className="text-red-600 font-semibold">Incorrect ❌</span>
-              )}
+            <div className="mb-2">
+              <strong>Notes:</strong>
+              {submittedResponse?.notes}
             </div>
           </Card>
         )}

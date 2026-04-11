@@ -6,6 +6,7 @@ import Highlighter from "react-highlight-words";
 
 
 function AppTable({
+  rowKey = "id",
   getColumns,
   dataSource,
   handleSearchApi,
@@ -127,7 +128,7 @@ function AppTable({
       </Row>
 
       <Table
-        rowKey="id"
+        rowKey={rowKey}
         size="small"
         columns={columns}
         dataSource={dataSource}

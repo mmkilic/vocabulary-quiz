@@ -20,17 +20,20 @@ function ReportPage() {
   const [isVisibleEditLevel, setVisibleEditLevel] = useState(false);
 
   useEffect(() => {
-    if(user){
+    if (user) {
       dispatch(fetchAll(user));
     }
   }, [dispatch, user]);
 
   const handleSearchApi = async () => {
+    console.log("Report List:", reports?.list );
     try {
-      await dispatch(fetchSearch({
-        user: user,
-        search: searchApi
-      })).unwrap();
+      await dispatch(
+        fetchSearch({
+          user: user,
+          search: searchApi,
+        }),
+      ).unwrap();
     } catch (error) {
       console.log(error);
     }
@@ -47,15 +50,11 @@ function ReportPage() {
 
   const columns = (getColumnSearchProps) => [
     {
-      title: "Word Id",
-      dataIndex: "wordId",
-      key: "wordId",
-      width: "7%",
-      ellipsis: {
-        showTitle: true,
-      },
-      sorter: (a, b) => a.wordId - b.wordId,
-      sortDirections: ["descend", "ascend"],
+      title: "No.",
+      dataIndex: "index",
+      key: "index",
+      width: "4%",
+      render: (text, record, index) => index + 1,
     },
     {
       title: "English",
@@ -65,7 +64,8 @@ function ReportPage() {
       ellipsis: {
         showTitle: true,
       },
-      sorter: (a, b) => a.english.toLowerCase().localeCompare(b.english.toLowerCase()),
+      sorter: (a, b) =>
+        a.english.toLowerCase().localeCompare(b.english.toLowerCase()),
       sortDirections: ["descend", "ascend"],
     },
     {
@@ -76,7 +76,8 @@ function ReportPage() {
       ellipsis: {
         showTitle: true,
       },
-      sorter: (a, b) => a.turkish.toLowerCase().localeCompare(b.turkish.toLowerCase()),
+      sorter: (a, b) =>
+        a.turkish.toLowerCase().localeCompare(b.turkish.toLowerCase()),
       sortDirections: ["descend", "ascend"],
     },
     {
@@ -98,7 +99,8 @@ function ReportPage() {
       ellipsis: {
         showTitle: true,
       },
-      sorter: (a, b) => a.level?.toLowerCase().localeCompare(b.level?.toLowerCase()),
+      sorter: (a, b) =>
+        a.level?.toLowerCase().localeCompare(b.level?.toLowerCase()),
       sortDirections: ["descend", "ascend"],
       ...getColumnSearchProps("level"),
     },
@@ -111,8 +113,9 @@ function ReportPage() {
         showTitle: true,
       },
       render: (_, record) => (
-        <div style={{ textAlign: 'center' }}>
-          {record?.totalCorrectAnswerCount} / {record?.totalAnsweredQuestionCount}
+        <div style={{ textAlign: "center" }}>
+          {record?.totalCorrectAnswerCount} /{" "}
+          {record?.totalAnsweredQuestionCount}
         </div>
       ),
     },
@@ -140,14 +143,14 @@ function ReportPage() {
       },
       render: (_, record) =>
         reports.list?.length >= 1 ? (
-          <div style={{ textAlign: 'center' }}>
+          <div style={{ textAlign: "center" }}>
             <Space>
               <InfoCircleOutlined
                 key="info"
                 title="info"
                 onClick={() => handleModalInfo(record)}
               />
-              <EditOutlined 
+              <EditOutlined
                 key="edit"
                 title="edit level"
                 onClick={() => {
@@ -165,6 +168,7 @@ function ReportPage() {
     <>
       <div className="px-6 py-4 my-6 mx-4">
         <AppTable
+          rowKey="wordId"
           dataSource={reports?.list ?? []}
           handleSearchApi={handleSearchApi}
           setIsVisibleCreate={handleModalCreate}

@@ -71,6 +71,7 @@ function QuizPage() {
       },
       sorter: (a, b) => a.id - b.id,
       sortDirections: ["descend", "ascend"],
+      defaultSortOrder: "descend",
     },
     {
       title: "Quiz Name",

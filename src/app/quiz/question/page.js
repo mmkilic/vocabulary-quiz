@@ -165,6 +165,10 @@ export default function QuizQuestionPage() {
               {submittedResponse?.question}
             </div>
             <div className="mb-2">
+              <strong>Level:</strong>{" "}
+              {submittedResponse?.level}
+            </div>
+            <div className="mb-2">
               <strong>Your Answer:</strong>{" "}
               {submittedResponse?.answer || <em>Not answered</em>}
             </div>
@@ -175,7 +179,7 @@ export default function QuizQuestionPage() {
               )}
             </div>
             <div className="mb-2">
-              <strong>Synonym:</strong>
+              <strong>Synonym:</strong>{" "}
               {submittedResponse?.synonym}
             </div>
             <div className="mb-2">
@@ -183,11 +187,11 @@ export default function QuizQuestionPage() {
               {submittedResponse?.english2English}
             </div>
             <div className="mb-2">
-              <strong>Sample Sentence:</strong>
+              <strong>Sample Sentence:</strong>{" "}
               {submittedResponse?.sentence}
             </div>
             <div className="mb-2">
-              <strong>Notes:</strong>
+              <strong>Notes:</strong>{" "}
               {submittedResponse?.notes}
             </div>
           </Card>
